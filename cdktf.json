@@ -1,0 +1,10 @@
+{
+  "language": "typescript",
+  "app": "npx ts-node main.ts",
+  "projectId": "your-project-id",
+  "terraformProviders": [
+    "hashicorp/azurerm@~> 4.0"
+  ],
+  "terraformModules": [],
+  "codeMakerOutput": "src"
+}
