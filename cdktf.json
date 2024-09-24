@@ -1,7 +1,7 @@
 {
   "language": "typescript",
   "app": "npx ts-node main.ts",
-  "projectId": "your-project-id",
+  "projectId": "01",
   "terraformProviders": [
     "hashicorp/azurerm@~> 4.0"
   ],

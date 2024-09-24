@@ -1,0 +1,23 @@
+{
+    "name": "iac-az-cdktf",
+    "version": "1.0.0",
+    "description": "Infrastructure as Code using CDKTF for Azure",
+    "main": "main.ts",
+    "scripts": {
+      "build": "tsc",
+      "synth": "cdktf synth",
+      "deploy": "cdktf deploy",
+      "destroy": "cdktf destroy"
+    },
+    "author": "Your Name",
+    "license": "MIT",
+    "dependencies": {
+      "@cdktf/provider-azurerm": "^13.3.0",
+      "cdktf": "^0.20.9"
+    },
+    "devDependencies": {
+      "typescript": "^5.6.2",
+      "@types/node": "^22.6.1",
+      "ts-node": "^10.9.2"
+    }
+  }
