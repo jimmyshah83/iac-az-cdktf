@@ -14,7 +14,8 @@ class MyStack extends TerraformStack {
 
     // Define the Azure provider
     new AzurermProvider(this, "AzureRm", {
-        features: [{}]
+        features: [{}], 
+        subscriptionId: "1d8a3971-973e-4b52-841b-16614e79c84f",
       })
 
     // Get the current client configuration
@@ -23,11 +24,11 @@ class MyStack extends TerraformStack {
     // Define the Resource Group
     const resourceGroup = new ResourceGroup(this, 'rg', {
       name: 'js-eus-cdktf-aoai-03',
-      location: 'eastus' // Replace with var.location if needed
+      location: 'eastus' 
     });
 
     // Define the Cognitive Account
-    const cognitiveAccount = new CognitiveAccount(this, 'example', {
+    const cognitiveAccount = new CognitiveAccount(this, 'cdktf-cs', {
         name: 'aoai-cdktf-03',
         location: resourceGroup.location,
         resourceGroupName: resourceGroup.name,
@@ -41,8 +42,8 @@ class MyStack extends TerraformStack {
     });
 
     // Define the Key Vault
-    const keyVault = new KeyVault(this, 'example', {
-      name: 'js-eus-cdktf-example-kv',
+    const keyVault = new KeyVault(this, 'cdktf-kv', {
+      name: 'js-eus-cdktf-kv',
       location: resourceGroup.location,
       resourceGroupName: resourceGroup.name,
       tenantId: current.tenantId,
@@ -69,8 +70,8 @@ class MyStack extends TerraformStack {
     });
 
     // Define the Key Vault Key
-    const keyVaultKey = new KeyVaultKey(this, 'example', {
-      name: 'example-key-03',
+    const keyVaultKey = new KeyVaultKey(this, 'cdktf-kv-key', {
+      name: 'cdktf-key-03',
       keyVaultId: keyVault.id,
       keyType: 'RSA',
       keySize: 2048,
@@ -78,7 +79,7 @@ class MyStack extends TerraformStack {
     });
 
     // Define the Cognitive Account Customer Managed Key
-    new CognitiveAccountCustomerManagedKey(this, 'example', {
+    new CognitiveAccountCustomerManagedKey(this, 'cdktf-cmk', {
       cognitiveAccountId: cognitiveAccount.id,
       keyVaultKeyId: keyVaultKey.id,
       timeouts: {
