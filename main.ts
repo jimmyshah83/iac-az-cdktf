@@ -7,6 +7,12 @@ import { KeyVault } from '@cdktf/provider-azurerm/lib/key-vault';
 import { KeyVaultKey } from '@cdktf/provider-azurerm/lib/key-vault-key';
 import { CognitiveAccountCustomerManagedKeyA as CognitiveAccountCustomerManagedKey } from '@cdktf/provider-azurerm/lib/cognitive-account-customer-managed-key';
 import { DataAzurermClientConfig } from '@cdktf/provider-azurerm/lib/data-azurerm-client-config';
+import { VirtualNetwork } from '@cdktf/provider-azurerm/lib/virtual-network';
+import { Subnet } from './src/providers/azurerm/subnet';
+import { PrivateEndpoint } from '@cdktf/provider-azurerm/lib/private-endpoint';
+import { PrivateDnsZone } from './src/providers/azurerm/private-dns-zone';
+import { PrivateDnsARecord } from './src/providers/azurerm/private-dns-a-record';
+import { PrivateDnsZoneVirtualNetworkLink } from './src/providers/azurerm/private-dns-zone-virtual-network-link';
 
 class MyStack extends TerraformStack {
   constructor(scope: Construct, id: string) {
@@ -86,6 +92,53 @@ class MyStack extends TerraformStack {
         create: '500m',
         update: '500m'
       }
+    });
+    
+    // Define the Virtual Network
+    const vnet = new VirtualNetwork(this, 'cdktf-vnet', {
+      name: 'cdktf-vnet',
+      location: resourceGroup.location,
+      resourceGroupName: resourceGroup.name,
+      addressSpace: ['10.0.0.0/27']
+    });
+
+    const subnet = new Subnet(this, 'cdktf-subnet', {
+      name: 'cdktf-subnet',
+      resourceGroupName: resourceGroup.name,
+      virtualNetworkName: vnet.name,
+      addressPrefixes: ['10.0.0.0/28']
+    });
+
+    // Define the Private DNS Zone
+    const privateDnsZone = new PrivateDnsZone(this, 'cdktf-private-dns-zone', {
+      name: 'privatelink.cognitiveservices.azure.com',
+      resourceGroupName: resourceGroup.name
+    });
+
+    // Deine the DNZ zone virtual network link
+    const dnsZoneVnetLink = new PrivateDnsZoneVirtualNetworkLink(this, 'cdktf-dns-zone-vnet-link', {
+      name: 'cdktf-dns-zone-vnet-link',
+      resourceGroupName: resourceGroup.name,
+      privateDnsZoneName: privateDnsZone.name,
+      virtualNetworkId: vnet.id
+    });
+
+    const privateEndpoint = new PrivateEndpoint(this, 'cdktf-private-endpoint', {
+      name: 'cdktf-private-endpoint',
+      location: resourceGroup.location,
+      resourceGroupName: resourceGroup.name,
+      subnetId: subnet.id,
+      privateServiceConnection: {
+          name: 'cdktf-private-endpoint-connection',
+          privateConnectionResourceId: cognitiveAccount.id,
+          subresourceNames: ['account'],
+          isManualConnection: false,
+        },
+        privateDnsZoneGroup: {
+          name: 'cdktf-private-endpoint-dns-zone-group',
+          privateDnsZoneIds: [privateDnsZone.id]
+        },
+        dependsOn: [dnsZoneVnetLink]
     });
   }
 }

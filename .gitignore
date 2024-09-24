@@ -10,3 +10,4 @@ cdktf.out/
 dist/
 terraform.cdktf-azure.tfstate
 .terraform.cdktf-azure.tfstate.lock.info
+terraform.cdktf-azure.tfstate.backup
