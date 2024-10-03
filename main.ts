@@ -13,6 +13,7 @@ import { PrivateEndpoint } from '@cdktf/provider-azurerm/lib/private-endpoint';
 import { PrivateDnsZone } from './src/providers/azurerm/private-dns-zone';
 import { PrivateDnsARecord } from './src/providers/azurerm/private-dns-a-record';
 import { PrivateDnsZoneVirtualNetworkLink } from './src/providers/azurerm/private-dns-zone-virtual-network-link';
+import { CognitiveDeployment } from './src/providers/azurerm/cognitive-deployment';
 
 class MyStack extends TerraformStack {
   constructor(scope: Construct, id: string) {
@@ -29,13 +30,13 @@ class MyStack extends TerraformStack {
 
     // Define the Resource Group
     const resourceGroup = new ResourceGroup(this, 'rg', {
-      name: 'js-eus-cdktf-aoai-03',
-      location: 'eastus' 
+      name: 'js-cc-cdktf-aoai-01',
+      location: 'canadacentral' 
     });
 
     // Define the Cognitive Account
     const cognitiveAccount = new CognitiveAccount(this, 'cdktf-cs', {
-        name: 'aoai-cdktf-03',
+        name: 'cc-aoai-cdktf-01',
         location: resourceGroup.location,
         resourceGroupName: resourceGroup.name,
         kind: 'OpenAI',
@@ -44,12 +45,24 @@ class MyStack extends TerraformStack {
             type: 'SystemAssigned'
         },
         publicNetworkAccessEnabled: false,
-        customSubdomainName: 'aoai-cdktf-03', 
+        customSubdomainName: 'cc-aoai-cdktf-01', 
+    });    
+
+    const cognitiveDeployment = new CognitiveDeployment(this, 'cdktf-cd', {
+      cognitiveAccountId: cognitiveAccount.id,
+      name: 'gpt-4o',
+      model: {
+        name: 'gpt-4o',
+        format: 'OpenAI',
+      },
+      sku: {
+        name: 'S0'
+      },
     });
 
     // Define the Key Vault
     const keyVault = new KeyVault(this, 'cdktf-kv', {
-      name: 'js-eus-cdktf-kv',
+      name: 'js-cc-cdktf-kv',
       location: resourceGroup.location,
       resourceGroupName: resourceGroup.name,
       tenantId: current.tenantId,
@@ -77,7 +90,7 @@ class MyStack extends TerraformStack {
 
     // Define the Key Vault Key
     const keyVaultKey = new KeyVaultKey(this, 'cdktf-kv-key', {
-      name: 'cdktf-key-03',
+      name: 'cdktf-key-01',
       keyVaultId: keyVault.id,
       keyType: 'RSA',
       keySize: 2048,
