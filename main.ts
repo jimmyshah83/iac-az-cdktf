@@ -22,7 +22,7 @@ class MyStack extends TerraformStack {
     // Define the Azure provider
     new AzurermProvider(this, "AzureRm", {
         features: [{}], 
-        subscriptionId: "1d8a3971-973e-4b52-841b-16614e79c84f",
+        subscriptionId: "57123c17-af1a-4ec2-9494-a214fb148bf4",
       })
 
     // Get the current client configuration
@@ -30,13 +30,13 @@ class MyStack extends TerraformStack {
 
     // Define the Resource Group
     const resourceGroup = new ResourceGroup(this, 'rg', {
-      name: 'js-cc-cdktf-aoai-01',
+      name: 'js-cc-cdktf-aoai-02',
       location: 'canadacentral' 
     });
 
     // Define the Cognitive Account
     const cognitiveAccount = new CognitiveAccount(this, 'cdktf-cs', {
-        name: 'cc-aoai-cdktf-01',
+        name: 'cc-aoai-cdktf-02',
         location: resourceGroup.location,
         resourceGroupName: resourceGroup.name,
         kind: 'OpenAI',
@@ -45,24 +45,24 @@ class MyStack extends TerraformStack {
             type: 'SystemAssigned'
         },
         publicNetworkAccessEnabled: false,
-        customSubdomainName: 'cc-aoai-cdktf-01', 
+        customSubdomainName: 'cc-aoai-cdktf-cus-domain-02', 
     });    
 
-    const cognitiveDeployment = new CognitiveDeployment(this, 'cdktf-cd', {
-      cognitiveAccountId: cognitiveAccount.id,
-      name: 'gpt-4o',
-      model: {
-        name: 'gpt-4o',
-        format: 'OpenAI',
-      },
-      sku: {
-        name: 'S0'
-      },
-    });
+    // const cognitiveDeployment = new CognitiveDeployment(this, 'cdktf-cd', {
+    //   cognitiveAccountId: cognitiveAccount.id,
+    //   name: 'gpt-4o',
+    //   model: {
+    //     name: 'gpt-4o',
+    //     format: 'OpenAI',
+    //   },
+    //   sku: {
+    //     name: 'S0'
+    //   },
+    // });
 
     // Define the Key Vault
     const keyVault = new KeyVault(this, 'cdktf-kv', {
-      name: 'js-cc-cdktf-kv',
+      name: 'js-cc-cdktf-kv-02',
       location: resourceGroup.location,
       resourceGroupName: resourceGroup.name,
       tenantId: current.tenantId,
@@ -90,7 +90,7 @@ class MyStack extends TerraformStack {
 
     // Define the Key Vault Key
     const keyVaultKey = new KeyVaultKey(this, 'cdktf-kv-key', {
-      name: 'cdktf-key-01',
+      name: 'cdktf-key-02',
       keyVaultId: keyVault.id,
       keyType: 'RSA',
       keySize: 2048,
